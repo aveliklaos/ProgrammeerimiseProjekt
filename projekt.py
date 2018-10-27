@@ -1,0 +1,146 @@
+##https://www.youtube.com/playlist?list=PLzMcBGfZo4-lp3jAExUCewBfMx3UZFkh5
+#kasutasime mängu loomisel playlistis olevate videote abi, ehk ülesehitus on sarnane
+
+import pygame
+from random import randint
+pygame.init()
+
+akna_laius = 1200
+akna_kõrgus = 750
+
+mänguaken = pygame.display.set_mode((akna_laius, akna_kõrgus))
+pygame.display.set_caption("Kassimäng")
+
+#kõik pildid, mida mängus vaja
+background = pygame.image.load("background.jpg")
+paremale_suunatud = pygame.image.load("paremale.png")
+vasakule_suunatud = pygame.image.load("vasakule.png")
+herilane = pygame.image.load("herilane.png")
+kärbes = pygame.image.load("kärbes.png")
+konserv = pygame.image.load("konserv.png")
+
+#vajaminevad muutujad
+font = pygame.font.SysFont(None,50)
+kiirus = 8
+vasakule = False
+paremale = True
+asukoha_muutus = True
+skoor = 0
+energiariba_laius = 990
+energiariba_kõrgus = 30
+x_kass = 100
+y_kass= 50
+kassi_laius = 145
+kassi_kõrgus = 80
+kärbse_laius = 35
+kärbse_kõrgus = 35
+herilase_laius = 35
+herilase_kõrgus = 35
+konservi_laius = 45
+konservi_kõrgus = 30
+x_konserv = randint(0,1200) 
+y_konserv = randint(30,750)
+
+#vajaminevad funktsioonid
+def kärbse_asukoht():
+    x_kärbes = randint(100,1100)
+    y_kärbes = randint(30,650)
+    while not x_kärbes >= x_kass + 110 and x_kärbes <= x_kass - 110 and y_kärbes >= y_kass + 45 and y_kärbes <= y_kass - 45 and x_kärbes >= x_herilane + 45 and x_kärbes <= x_herilane - 45 and y_kärbes >= y_herilane + 45 and y_kärbes <= y_herilane - 45:
+        x_kärbes = randint(0,1200)
+        y_kärbes = randint(150,650)
+    return [x_kärbes, y_kärbes]
+
+def herilase_asukoht():       
+    x_herilane = randint(100,1100)
+    y_herilane = randint(150,650)
+    while not x_herilane >= x_kass + 110 and x_herilane <= x_kass - 110 and y_herilane >= y_kass + 45 and y_herilane <= y_kass - 45:
+        x_herilane = randint(0,1200) 
+        y_herilane = randint(150,650)
+    return [x_herilane, y_herilane]
+
+def konservi_asukoht():
+    x_konserv = randint(100,1100) 
+    y_konserv = randint(30,750)
+    return [x_konserv, y_konserv]
+
+#https://www.youtube.com/watch?v=PzG-fnci8uE
+def skoori_näitamine():
+    skoori_tekst = "SKOOR: " + str(skoor)
+    tekst_ekraanile = font.render(skoori_tekst, True, (255,182,193))
+    return mänguaken.blit(tekst_ekraanile, [1000,0])
+    
+def mänguaken_uuesti():
+    mänguaken.blit(background, (0,0))
+    skoori_näitamine()
+    pygame.draw.rect(mänguaken, (176,226,255), (0,0, energiariba_laius, energiariba_kõrgus))
+    mänguaken.blit(herilane, (x_herilane, y_herilane))
+    mänguaken.blit(kärbes, (x_kärbes, y_kärbes))
+    mänguaken.blit(konserv, (x_konserv, y_konserv))
+    if vasakule == True:
+        mänguaken.blit(vasakule_suunatud, (x_kass , y_kass))
+    elif paremale == True:
+        mänguaken.blit(paremale_suunatud, (x_kass , y_kass))
+    pygame.display.update()
+
+     
+#main loop
+liigub = True
+while liigub:
+    pygame.time.delay(5)
+    
+    #Selleks, et alguses kärbes ja herilane kuhugi saada
+    if asukoha_muutus == True:
+        x_herilane = herilase_asukoht()[0]
+        y_herilane = herilase_asukoht()[1]
+        x_kärbes = kärbse_asukoht()[0]
+        y_kärbes = kärbse_asukoht()[1]
+        #asukoha muutus peab olema edaspidi False, et iga kord kui tsüklit
+        #uuesti teeb, ei määrataks kärbsele ja herilasele uut asukohta
+        asukoha_muutus = False
+        
+    for event in pygame.event.get():
+        #registreerib ära, kui vajutati X nuppu ehk taheti mäng sulgeda
+        if event.type == pygame.QUIT:
+            liigub = False
+            
+    nupud = pygame.key.get_pressed()
+    if nupud[pygame.K_LEFT] and x_kass > kiirus - 6:
+        x_kass -= kiirus
+        vasakule = True
+        paremale = False
+    elif nupud[pygame.K_RIGHT] and x_kass < akna_laius - kassi_laius + 25:
+        x_kass += kiirus
+        vasakule = False
+        paremale = True
+    elif nupud[pygame.K_UP] and y_kass > kiirus + 30:
+        y_kass -= kiirus
+    elif nupud[pygame.K_DOWN] and y_kass < akna_kõrgus - kassi_kõrgus - kiirus:
+        y_kass += kiirus
+
+    #See osa selleks, et kärbes ja herilane asukohta muudaks kui kass vastu kärbest ja et mäng lõppeks, kui kass vastu herilast      
+    if vasakule == True:
+        if x_kärbes <= x_kass + 70 and x_kärbes >= x_kass - 3 and y_kärbes <= y_kass +75 and y_kärbes >= y_kass -35:
+            x_herilane = herilase_asukoht()[0]
+            y_herilane = herilase_asukoht()[1]
+            x_kärbes = kärbse_asukoht()[0]
+            y_kärbes = kärbse_asukoht()[1]
+            skoor += 1
+        elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 3 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
+            #läks vastu herilast ehk mäng läbi
+            liigub = False
+
+    elif paremale == True:
+        if x_kärbes >= x_kass -15 and x_kärbes <= x_kass + 80 and y_kärbes >= y_kass -15 and y_kärbes <= y_kass + 60:
+            x_herilane = herilase_asukoht()[0]
+            y_herilane = herilase_asukoht()[1]
+            x_kärbes = kärbse_asukoht()[0]
+            y_kärbes = kärbse_asukoht()[1]
+            skoor += 1
+        elif x_herilane >= x_kass -15 and x_herilane <= x_kass + 80 and y_herilane >= y_kass -15 and y_herilane <= y_kass + 60:
+            #läks vastu herilast ehk mäng läbi
+            liigub = False
+        
+    mänguaken_uuesti()
+            
+                   
+pygame.quit()
