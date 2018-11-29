@@ -39,7 +39,7 @@ herilase_kõrgus = 35
 konservi_laius = 45
 konservi_kõrgus = 30
 x_konserv = randint(0,1200) 
-y_konserv = randint(30,750)
+y_konserv = randint(150,750)
 
 #vajaminevad funktsioonid
 def kärbse_asukoht():
@@ -60,8 +60,11 @@ def herilase_asukoht():
 
 def konservi_asukoht():
     x_konserv = randint(100,1100) 
-    y_konserv = randint(30,750)
-    return [x_konserv, y_konserv]
+    y_konserv = randint(150,750)
+    while not x_konserv >= x_kass + 110 and x_konserv <= x_kass - 110 and y_konserv >= y_kass + 45 and y_konserv <= y_kass - 45 and x_konserv >= x_herilane + 45 and x_konserv <= x_herilane - 45 and y_konserv >= y_herilane + 45 and y_konserv <= y_herilane - 45 and x_konserv >= x_kärbes + 110 and x_konserv <= x_kärbes - 110 and y_konserv >= y_kärbes + 45 and y_konserv <= y_kärbes - 45:
+        x_konserv = randint(100,1100) 
+        y_konserv = randint(150,750)
+    return (x_konserv, y_konserv)
 
 #https://www.youtube.com/watch?v=PzG-fnci8uE
 def skoori_näitamine():
@@ -75,7 +78,8 @@ def mänguaken_uuesti():
     pygame.draw.rect(mänguaken, (176,226,255), (0,0, energiariba_laius, energiariba_kõrgus))
     mänguaken.blit(herilane, (x_herilane, y_herilane))
     mänguaken.blit(kärbes, (x_kärbes, y_kärbes))
-    mänguaken.blit(konserv, (x_konserv, y_konserv))
+    if konserv_väärtus == True:
+        mänguaken.blit(konserv, (x_konserv, y_konserv))
     if vasakule == True:
         mänguaken.blit(vasakule_suunatud, (x_kass , y_kass))
     elif paremale == True:
@@ -84,12 +88,16 @@ def mänguaken_uuesti():
 
      
 #main loop
+konserv_väärtus = False
 liigub = True
 while liigub:
     pygame.time.delay(5)
     energiariba_laius -= 1.3
     if energiariba_laius <= 2:
         liigub = False
+    if randint(0,275) == randint(0,275) and konserv_väärtus == False:
+        konservi_asukoht()
+        konserv_väärtus = True
     #Selleks, et alguses kärbes ja herilane kuhugi saada
     if asukoha_muutus == True:
         x_herilane = herilase_asukoht()[0]
@@ -121,16 +129,21 @@ while liigub:
 
     #See osa selleks, et kärbes ja herilane asukohta muudaks kui kass vastu kärbest ja et mäng lõppeks, kui kass vastu herilast      
     if vasakule == True:
-        if x_kärbes <= x_kass + 70 and x_kärbes >= x_kass - 3 and y_kärbes <= y_kass +75 and y_kärbes >= y_kass -35:
+        if x_kärbes <= x_kass + 70 and x_kärbes >= x_kass - 7 and y_kärbes <= y_kass +75 and y_kärbes >= y_kass -35:
             x_herilane = herilase_asukoht()[0]
             y_herilane = herilase_asukoht()[1]
             x_kärbes = kärbse_asukoht()[0]
             y_kärbes = kärbse_asukoht()[1]
             skoor += 1
-        elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 3 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
+        elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 7 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
             #läks vastu herilast ehk mäng läbi
             liigub = False
-
+        elif x_konserv <= x_kass + 70 and x_konserv >= x_kass - 7 and y_konserv <= y_kass +75 and y_konserv >= y_kass -35:
+            konserv_väärtus = False
+            if 1000 >= energiariba_laius:
+                energiariba_laius += 10 
+            else:
+                energiariba_laius += 1025-energiariba_laius 
     elif paremale == True:
         if x_kärbes >= x_kass -15 and x_kärbes <= x_kass + 80 and y_kärbes >= y_kass -15 and y_kärbes <= y_kass + 60:
             x_herilane = herilase_asukoht()[0]
@@ -141,7 +154,12 @@ while liigub:
         elif x_herilane >= x_kass -15 and x_herilane <= x_kass + 80 and y_herilane >= y_kass -15 and y_herilane <= y_kass + 60:
             #läks vastu herilast ehk mäng läbi
             liigub = False
-        
+        elif x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
+            konserv_väärtus = False
+            if 1000 >= energiariba_laius:
+                energiariba_laius += 10 
+            else:
+                energiariba_laius += 1025-energiariba_laius 
     mänguaken_uuesti()
             
 pygame.quit()
