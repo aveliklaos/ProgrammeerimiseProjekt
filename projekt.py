@@ -20,13 +20,13 @@ kärbes = pygame.image.load("kärbes.png")
 konserv = pygame.image.load("konserv.png")
 
 #vajaminevad muutujad
-font = pygame.font.SysFont(None,50)
+font = pygame.font.SysFont("Arial",35)
 kiirus = 8
 vasakule = False
 paremale = True
 asukoha_muutus = True
 skoor = 0
-energiariba_laius = 990
+energiariba_laius = 1025
 energiariba_kõrgus = 30
 x_kass = 100
 y_kass= 50
@@ -67,7 +67,7 @@ def konservi_asukoht():
 def skoori_näitamine():
     skoori_tekst = "SKOOR: " + str(skoor)
     tekst_ekraanile = font.render(skoori_tekst, True, (255,182,193))
-    return mänguaken.blit(tekst_ekraanile, [1000,0])
+    return mänguaken.blit(tekst_ekraanile, [1050,0])
     
 def mänguaken_uuesti():
     mänguaken.blit(background, (0,0))
@@ -87,7 +87,9 @@ def mänguaken_uuesti():
 liigub = True
 while liigub:
     pygame.time.delay(5)
-    
+    energiariba_laius -= 1.3
+    if energiariba_laius <= 2:
+        liigub = False
     #Selleks, et alguses kärbes ja herilane kuhugi saada
     if asukoha_muutus == True:
         x_herilane = herilase_asukoht()[0]
@@ -142,5 +144,4 @@ while liigub:
         
     mänguaken_uuesti()
             
-                   
 pygame.quit()
