@@ -21,6 +21,7 @@ konserv = pygame.image.load("konserv.png")
 
 #vajaminevad muutujad
 font = pygame.font.SysFont("Arial",35)
+font2 = pygame.font.SysFont("Arial",35)
 kiirus = 8
 vasakule = False
 paremale = True
@@ -41,7 +42,32 @@ konservi_kõrgus = 30
 x_konserv = randint(0,1200) 
 y_konserv = randint(150,750)
 
+
 #vajaminevad funktsioonid
+#suvalise teksti kuvamiseks
+def draw_text(tekst, x_positsioon, y_positsioon):
+    tekst1 = tekst
+    tekst_ekraanile = font2.render(tekst1, True, (0,0,0))
+    return mänguaken.blit(tekst_ekraanile, [x_positsioon,y_positsioon])
+
+def algusaken():
+    mänguaken.blit(background, (0,0))
+    draw_text("Liigu nuppude abil ning püüa kärbseid.",
+              375, 200)
+    draw_text("Mäng on läbi, kui energia saab otsa või kui lähed vastu herilast.",
+              200, 300) 
+    draw_text(" Konservi püüdes saad energiat juurde.",
+              375, 400)
+    draw_text("Vajuta mingit nuppu, et alustada", 410, 600)
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                waiting = False
+
 def kärbse_asukoht():
     x_kärbes = randint(100,1100)
     y_kärbes = randint(30,650)
@@ -60,10 +86,10 @@ def herilase_asukoht():
 
 def konservi_asukoht():
     x_konserv = randint(100,1100) 
-    y_konserv = randint(150,750)
+    y_konserv = randint(150,650)
     while not x_konserv >= x_kass + 110 and x_konserv <= x_kass - 110 and y_konserv >= y_kass + 45 and y_konserv <= y_kass - 45 and x_konserv >= x_herilane + 45 and x_konserv <= x_herilane - 45 and y_konserv >= y_herilane + 45 and y_konserv <= y_herilane - 45 and x_konserv >= x_kärbes + 110 and x_konserv <= x_kärbes - 110 and y_konserv >= y_kärbes + 45 and y_konserv <= y_kärbes - 45:
         x_konserv = randint(100,1100) 
-        y_konserv = randint(150,750)
+        y_konserv = randint(150,650)
     return (x_konserv, y_konserv)
 
 #https://www.youtube.com/watch?v=PzG-fnci8uE
@@ -90,12 +116,21 @@ def mänguaken_uuesti():
 #main loop
 konserv_väärtus = False
 liigub = True
+game_over = False
+mängu_algus = True
+
 while liigub:
     pygame.time.delay(5)
     energiariba_laius -= 1.3
+    if mängu_algus == True:
+        algusaken()
+        mängu_algus = False
+    #if game_over == True:
+        #siia peaks tegema mingi funktsiooni vms et tuleks game over ekraan
     if energiariba_laius <= 2:
         liigub = False
-    if randint(0,275) == randint(0,275) and konserv_väärtus == False:
+        #game_over = True
+    if randint(0,500) == randint(0,500) and konserv_väärtus == False:
         konservi_asukoht()
         konserv_väärtus = True
     #Selleks, et alguses kärbes ja herilane kuhugi saada
@@ -138,6 +173,7 @@ while liigub:
         elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 7 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
             #läks vastu herilast ehk mäng läbi
             liigub = False
+            #game_over = True
         elif x_konserv <= x_kass + 70 and x_konserv >= x_kass - 7 and y_konserv <= y_kass +75 and y_konserv >= y_kass -35:
             konserv_väärtus = False
             if 1000 >= energiariba_laius:
@@ -154,6 +190,7 @@ while liigub:
         elif x_herilane >= x_kass -15 and x_herilane <= x_kass + 80 and y_herilane >= y_kass -15 and y_herilane <= y_kass + 60:
             #läks vastu herilast ehk mäng läbi
             liigub = False
+            #game_over = True
         elif x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
             konserv_väärtus = False
             if 1000 >= energiariba_laius:
