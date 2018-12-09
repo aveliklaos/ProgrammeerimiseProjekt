@@ -21,7 +21,7 @@ konserv = pygame.image.load("konserv.png").convert_alpha()
 
 #vajaminevad muutujad
 font = pygame.font.SysFont("Arial",35)
-font2 = pygame.font.SysFont("Arial",35)
+font2 = pygame.font.SysFont("Century Gothic",35)
 kiirus = 5
 asukoha_muutus = True
 skoor = 0
@@ -58,13 +58,13 @@ def algusaken():
     #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
     global liigub
     mänguaken.blit(background, (0,0))
-    draw_text("Liigu nuppude abil ning püüa kärbseid.",
-              375, 200)
-    draw_text("Mäng on läbi, kui energia saab otsa või kui lähed vastu herilast.",
-              200, 300) 
-    draw_text(" Konservi püüdes saad energiat juurde.",
-              375, 400)
-    draw_text("Vajuta 'Enter' nuppu, et alustada", 410, 600)
+    draw_text("Liigu nuppude abil ning püüa kärbseid",
+              265, 200)
+    draw_text("Mäng on läbi, kui energia saab otsa või kui lähed vastu herilast",
+              65, 300) 
+    draw_text(" Konservi püüdes saad energiat juurde",
+              265, 400)
+    draw_text("Alustamiseks vajuta 'Enter'", 395, 600)
     pygame.display.flip()
     waiting = True
     while waiting:
@@ -80,8 +80,8 @@ def lõppaken():
     global liigub
     mänguaken.blit(background, (0,0))
     draw_text("LÕPPSKOOR: " + str(skoor),
-              500, 200)
-    draw_text("Vajuta 'Enter' nuppu, et proovida uuesti", 380, 600)
+              465, 200)
+    draw_text("Uuesti mängimiseks vajuta 'Enter'", 320, 600)
     pygame.display.flip()
     waiting = True
     while waiting:
