@@ -233,7 +233,7 @@ while liigub:
             if x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
                 konserv_väärtus = False
                 konserv_ekraanil = False
-                if 1000 >= energiariba_laius:
+                if 800 >= energiariba_laius:
                     energiariba_laius += 200 
                 else:
                     energiariba_laius += 1025-energiariba_laius 
