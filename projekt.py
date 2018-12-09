@@ -39,18 +39,21 @@ herilase_laius = 35
 herilase_kõrgus = 35
 konservi_laius = 45
 konservi_kõrgus = 30
-x_konserv = randint(0,1200) 
-y_konserv = randint(150,750)
+#x_konserv = randint(0,1200) 
+#y_konserv = randint(150,750)
 
 
 #vajaminevad funktsioonid
 #suvalise teksti kuvamiseks
+#http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
 def draw_text(tekst, x_positsioon, y_positsioon):
     tekst1 = tekst
-    tekst_ekraanile = font2.render(tekst1, True, (0,0,0))
+    tekst_ekraanile = font2.render(tekst1, True, (20,20,20))
     return mänguaken.blit(tekst_ekraanile, [x_positsioon,y_positsioon])
 
+#http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
 def algusaken():
+    global liigub
     mänguaken.blit(background, (0,0))
     draw_text("Liigu nuppude abil ning püüa kärbseid.",
               375, 200)
@@ -64,7 +67,24 @@ def algusaken():
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                liigub = False
+                waiting = False
+            if event.type == pygame.KEYDOWN:
+                waiting = False
+#http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/              
+def lõppaken():
+    global liigub
+    mänguaken.blit(background, (0,0))
+    draw_text("LÕPPSKOOR: " + str(skoor),
+              500, 200)
+    draw_text("Vajuta mingit nuppu, et proovida uuesti", 380, 600)
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                liigub = False
+                waiting = False
             if event.type == pygame.KEYDOWN:
                 waiting = False
 
@@ -104,7 +124,7 @@ def mänguaken_uuesti():
     pygame.draw.rect(mänguaken, (176,226,255), (0,0, energiariba_laius, energiariba_kõrgus))
     mänguaken.blit(herilane, (x_herilane, y_herilane))
     mänguaken.blit(kärbes, (x_kärbes, y_kärbes))
-    if konserv_väärtus == True:
+    if konserv_ekraanil == True:
         mänguaken.blit(konserv, (x_konserv, y_konserv))
     if vasakule == True:
         mänguaken.blit(vasakule_suunatud, (x_kass , y_kass))
@@ -115,6 +135,7 @@ def mänguaken_uuesti():
      
 #main loop
 konserv_väärtus = False
+konserv_ekraanil = False
 liigub = True
 game_over = False
 mängu_algus = True
@@ -125,13 +146,20 @@ while liigub:
     if mängu_algus == True:
         algusaken()
         mängu_algus = False
-    #if game_over == True:
-        #siia peaks tegema mingi funktsiooni vms et tuleks game over ekraan
+    if game_over == True:
+        lõppaken()
+        skoor = 0
+        energiariba_laius = 1025
+        asukoha_muutus = True
+        game_over = False
     if energiariba_laius <= 2:
-        liigub = False
-        #game_over = True
-    if randint(0,500) == randint(0,500) and konserv_väärtus == False:
-        konservi_asukoht()
+        game_over = True
+    #loob konservi ilmumiseks x ja y koordinaadid
+    if randint(0,250) == randint(0,250) and konserv_ekraanil == False:
+        koordinaadid = konservi_asukoht()
+        x_konserv = koordinaadid[0]
+        y_konserv = koordinaadid[1] 
+        konserv_ekraanil = True
         konserv_väärtus = True
     #Selleks, et alguses kärbes ja herilane kuhugi saada
     if asukoha_muutus == True:
@@ -172,14 +200,15 @@ while liigub:
             skoor += 1
         elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 7 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
             #läks vastu herilast ehk mäng läbi
-            liigub = False
-            #game_over = True
-        elif x_konserv <= x_kass + 70 and x_konserv >= x_kass - 7 and y_konserv <= y_kass +75 and y_konserv >= y_kass -35:
-            konserv_väärtus = False
-            if 1000 >= energiariba_laius:
-                energiariba_laius += 10 
-            else:
-                energiariba_laius += 1025-energiariba_laius 
+            game_over = True
+        if konserv_väärtus == True:
+            if x_konserv <= x_kass + 70 and x_konserv >= x_kass - 7 and y_konserv <= y_kass +75 and y_konserv >= y_kass -35:
+                konserv_väärtus = False
+                konserv_ekraanil = False
+                if 1000 >= energiariba_laius:
+                    energiariba_laius += 200 
+                else:
+                    energiariba_laius += 1025-energiariba_laius 
     elif paremale == True:
         if x_kärbes >= x_kass -15 and x_kärbes <= x_kass + 80 and y_kärbes >= y_kass -15 and y_kärbes <= y_kass + 60:
             x_herilane = herilase_asukoht()[0]
@@ -189,14 +218,15 @@ while liigub:
             skoor += 1
         elif x_herilane >= x_kass -15 and x_herilane <= x_kass + 80 and y_herilane >= y_kass -15 and y_herilane <= y_kass + 60:
             #läks vastu herilast ehk mäng läbi
-            liigub = False
-            #game_over = True
-        elif x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
-            konserv_väärtus = False
-            if 1000 >= energiariba_laius:
-                energiariba_laius += 10 
-            else:
-                energiariba_laius += 1025-energiariba_laius 
+            game_over = True
+        if konserv_väärtus == True:
+            if x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
+                konserv_väärtus = False
+                konserv_ekraanil = False
+                if 1000 >= energiariba_laius:
+                    energiariba_laius += 200 
+                else:
+                    energiariba_laius += 1025-energiariba_laius 
     mänguaken_uuesti()
             
 pygame.quit()
