@@ -61,7 +61,7 @@ def algusaken():
               200, 300) 
     draw_text(" Konservi püüdes saad energiat juurde.",
               375, 400)
-    draw_text("Vajuta mingit nuppu, et alustada", 410, 600)
+    draw_text("Vajuta 'Enter' nuppu, et alustada", 410, 600)
     pygame.display.flip()
     waiting = True
     while waiting:
@@ -69,7 +69,7 @@ def algusaken():
             if event.type == pygame.QUIT:
                 liigub = False
                 waiting = False
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
 #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/              
 def lõppaken():
@@ -77,7 +77,7 @@ def lõppaken():
     mänguaken.blit(background, (0,0))
     draw_text("LÕPPSKOOR: " + str(skoor),
               500, 200)
-    draw_text("Vajuta mingit nuppu, et proovida uuesti", 380, 600)
+    draw_text("Vajuta 'Enter' nuppu, et proovida uuesti", 380, 600)
     pygame.display.flip()
     waiting = True
     while waiting:
@@ -85,7 +85,7 @@ def lõppaken():
             if event.type == pygame.QUIT:
                 liigub = False
                 waiting = False
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
 
 def kärbse_asukoht():
