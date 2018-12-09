@@ -12,17 +12,17 @@ mänguaken = pygame.display.set_mode((akna_laius, akna_kõrgus))
 pygame.display.set_caption("Kassimäng")
 
 #kõik pildid, mida mängus vaja
-background = pygame.image.load("background.jpg")
-paremale_suunatud = pygame.image.load("paremale.png")
-vasakule_suunatud = pygame.image.load("vasakule.png")
-herilane = pygame.image.load("herilane.png")
-kärbes = pygame.image.load("kärbes.png")
-konserv = pygame.image.load("konserv.png")
+background = pygame.image.load("background.jpg").convert()
+paremale_suunatud = pygame.image.load("paremale.png").convert_alpha()
+vasakule_suunatud = pygame.image.load("vasakule.png").convert_alpha()
+herilane = pygame.image.load("herilane.png").convert_alpha()
+kärbes = pygame.image.load("kärbes.png").convert_alpha()
+konserv = pygame.image.load("konserv.png").convert_alpha()
 
 #vajaminevad muutujad
 font = pygame.font.SysFont("Arial",35)
 font2 = pygame.font.SysFont("Arial",35)
-kiirus = 8
+kiirus = 5
 asukoha_muutus = True
 skoor = 0
 energiariba_laius = 1025
@@ -141,7 +141,7 @@ def mänguaken_uuesti():
 #main loop
 while liigub:
     pygame.time.delay(5)
-    energiariba_laius -= 1.3
+    energiariba_laius -= 0.6
     if mängu_algus == True:
         algusaken()
         mängu_algus = False
