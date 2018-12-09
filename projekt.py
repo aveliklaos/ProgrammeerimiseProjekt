@@ -19,6 +19,10 @@ herilane = pygame.image.load("herilane.png").convert_alpha()
 kärbes = pygame.image.load("kärbes.png").convert_alpha()
 konserv = pygame.image.load("konserv.png").convert_alpha()
 
+#taustamuusika
+pygame.mixer.music.load("muusika.mp3")
+pygame.mixer.music.play(-1,0.0)
+
 #vajaminevad muutujad
 font = pygame.font.SysFont("Arial",35)
 font2 = pygame.font.SysFont("Century Gothic",35)
@@ -69,6 +73,8 @@ def algusaken():
     waiting = True
     while waiting:
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                pygame.mixer.music.pause()
             if event.type == pygame.QUIT:
                 liigub = False
                 waiting = False
@@ -86,6 +92,8 @@ def lõppaken():
     waiting = True
     while waiting:
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                pygame.mixer.music.pause()
             if event.type == pygame.QUIT:
                 liigub = False
                 waiting = False
@@ -137,11 +145,11 @@ def mänguaken_uuesti():
     pygame.display.update()
     pygame.display.flip()
 
-     
 #main loop
 while liigub:
     pygame.time.delay(5)
     energiariba_laius -= 0.6
+        
     if mängu_algus == True:
         algusaken()
         mängu_algus = False
@@ -176,6 +184,9 @@ while liigub:
             liigub = False
             
     nupud = pygame.key.get_pressed()
+    #kui vajutada s nuppu, siis muusika jääb seisma
+    if nupud[pygame.K_s]:
+        pygame.mixer.music.pause()
     if nupud[pygame.K_LEFT] and x_kass > kiirus - 6:
         x_kass -= kiirus
         vasakule = True
