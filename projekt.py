@@ -23,8 +23,6 @@ konserv = pygame.image.load("konserv.png")
 font = pygame.font.SysFont("Arial",35)
 font2 = pygame.font.SysFont("Arial",35)
 kiirus = 8
-vasakule = False
-paremale = True
 asukoha_muutus = True
 skoor = 0
 energiariba_laius = 1025
@@ -39,20 +37,25 @@ herilase_laius = 35
 herilase_kõrgus = 35
 konservi_laius = 45
 konservi_kõrgus = 30
-#x_konserv = randint(0,1200) 
-#y_konserv = randint(150,750)
-
+konserv_väärtus = False
+konserv_ekraanil = False
+liigub = True
+game_over = False
+mängu_algus = True
+vasakule = False
+paremale = True
+asukoha_muutus = True
 
 #vajaminevad funktsioonid
-#suvalise teksti kuvamiseks
-#http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
 def draw_text(tekst, x_positsioon, y_positsioon):
+    #suvalise teksti kuvamiseks
+    #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
     tekst1 = tekst
     tekst_ekraanile = font2.render(tekst1, True, (20,20,20))
     return mänguaken.blit(tekst_ekraanile, [x_positsioon,y_positsioon])
 
-#http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
 def algusaken():
+    #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
     global liigub
     mänguaken.blit(background, (0,0))
     draw_text("Liigu nuppude abil ning püüa kärbseid.",
@@ -71,8 +74,9 @@ def algusaken():
                 waiting = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
-#http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/              
+              
 def lõppaken():
+    #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
     global liigub
     mänguaken.blit(background, (0,0))
     draw_text("LÕPPSKOOR: " + str(skoor),
@@ -131,15 +135,10 @@ def mänguaken_uuesti():
     elif paremale == True:
         mänguaken.blit(paremale_suunatud, (x_kass , y_kass))
     pygame.display.update()
+    pygame.display.flip()
 
      
 #main loop
-konserv_väärtus = False
-konserv_ekraanil = False
-liigub = True
-game_over = False
-mängu_algus = True
-
 while liigub:
     pygame.time.delay(5)
     energiariba_laius -= 1.3
