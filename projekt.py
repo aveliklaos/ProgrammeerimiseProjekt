@@ -24,8 +24,12 @@ pygame.mixer.music.load("muusika.mp3")
 pygame.mixer.music.play(-1,0.0)
 
 #vajaminevad muutujad
+PINK = (255, 0, 255)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 font = pygame.font.SysFont("Arial",35)
 font2 = pygame.font.SysFont("Century Gothic",35)
+skoori_fail = "skoorid.txt"
 kiirus = 5
 asukoha_muutus = True
 skoor = 0
@@ -86,8 +90,13 @@ def lõppaken():
     global liigub
     mänguaken.blit(background, (0,0))
     draw_text("LÕPPSKOOR: " + str(skoor),
-              465, 200)
-    draw_text("Uuesti mängimiseks vajuta 'Enter'", 320, 600)
+              465, 100)
+    draw_text("Top 10 nägemiseks vajuta 'Enter'", 320, 600)
+    
+    nimi = enterbox(mänguaken, "Sinu nimi: ")
+    if type(nimi) != bool:
+        kirjuta_faili("skoorid.txt", nimi, skoor)
+    
     pygame.display.flip()
     waiting = True
     while waiting:
@@ -99,6 +108,106 @@ def lõppaken():
                 waiting = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
+                skooriaken()
+                
+def kirjuta_faili(fail, nimi, skoor):
+    f = open(fail, "a")
+    f.write("\n"+str(skoor)+", "+ nimi)
+    f.close
+                
+def enterbox(mänguaken, txt):
+    # https://www.dreamincode.net/forums/topic/395940-a-highscore-module-for-pygame/
+    def blink(mänguaken):
+        for color in [PINK, WHITE]:
+            pygame.draw.circle(box, color, (600, 220), 7, 0)
+            mänguaken.blit(box, (0, by//2))
+            pygame.display.flip()
+            pygame.time.wait(300)
+
+    def show_name(mänguaken, name):
+        pygame.draw.rect(box, WHITE, (200, 200, bx-400, 50), 0)
+        txt_surf = font.render(name, True, BLACK)
+        txt_rect = txt_surf.get_rect(center=(600, 220))
+        box.blit(txt_surf, txt_rect)
+        mänguaken.blit(box, (0, by//2))
+        pygame.display.flip()
+        
+    bx = 1200
+    by = 300
+
+    # tekitab kasti
+    box = pygame.surface.Surface((bx, by))
+    box.blit(background, (0,0))
+    txt_surf = font2.render(txt, True, BLACK)
+    txt_rect = txt_surf.get_rect(center=(bx//2, int(by*0.3)))
+    box.blit(txt_surf, txt_rect)
+
+    name = ""
+    show_name(mänguaken, name)
+
+    # sisestuse loop
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                liigub = False
+                return False
+            elif event.type == pygame.KEYDOWN:
+                inkey = event.key
+                if inkey in [13, 271]:  # enter
+                    skooriaken()
+                    return name
+                elif inkey == 8:  # tagasi nupp
+                    name = name[:-1]
+                elif inkey <= 300:
+                    if pygame.key.get_mods() & pygame.KMOD_SHIFT and 122 >= inkey >= 97:
+                        inkey -= 32  # SUURED tähed
+                    name += chr(inkey)
+
+        if name == "":
+            blink(mänguaken)
+        show_name(mänguaken, name)
+
+                
+def skooriaken():
+    global liigub
+    mänguaken.blit(background, (0,0))
+    skoorid = top10("skoorid.txt")
+    koht = 1
+    y = 125
+    draw_text("TOP 10", 300, 50)
+    for skoorjanimi in skoorid:
+        nimi = skoorjanimi[1]
+        skoor= skoorjanimi[0]
+        draw_text(str(koht)+". "+nimi+"-"+str(skoor), 300, y)
+        koht+=1
+        y+=50
+    draw_text("Edasi mängimiseks vajuta 'Enter'", 320, 650)    
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                pygame.mixer.music.pause()
+            if event.type == pygame.QUIT:
+                liigub = False
+                waiting = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                waiting = False
+            
+
+def top10(skoori_fail):
+    fail = open(skoori_fail, 'r')
+    kõik_skoorid = fail.readlines()
+    fail.close
+    
+    parimad10 = []
+    
+    for rida in kõik_skoorid:
+        if len(parimad10) < 10:
+            nimi_ja_skoor = rida.strip().split(", ")
+            parimad10.append(nimi_ja_skoor)
+    sorteeritud = list(reversed(sorted(parimad10, key = lambda x: int(x[0]))))
+    return sorteeritud
 
 def kärbse_asukoht():
     x_kärbes = randint(100,1100)
@@ -202,7 +311,7 @@ while liigub:
 
     #See osa selleks, et kärbes ja herilane asukohta muudaks kui kass vastu kärbest ja et mäng lõppeks, kui kass vastu herilast      
     if vasakule == True:
-        if x_kärbes <= x_kass + 70 and x_kärbes >= x_kass - 7 and y_kärbes <= y_kass +75 and y_kärbes >= y_kass -35:
+        if x_kärbes <= x_kass + 70 and x_kärbes >= x_kass - 5 and y_kärbes <= y_kass +75 and y_kärbes >= y_kass -35:
             x_herilane = herilase_asukoht()[0]
             y_herilane = herilase_asukoht()[1]
             x_kärbes = kärbse_asukoht()[0]
@@ -216,7 +325,7 @@ while liigub:
                 konserv_väärtus = False
                 konserv_ekraanil = False
                 if 1000 >= energiariba_laius:
-                    energiariba_laius += 200 
+                    energiariba_laius += 300 
                 else:
                     energiariba_laius += 1025-energiariba_laius 
     elif paremale == True:
@@ -234,7 +343,7 @@ while liigub:
                 konserv_väärtus = False
                 konserv_ekraanil = False
                 if 800 >= energiariba_laius:
-                    energiariba_laius += 200 
+                    energiariba_laius += 300 
                 else:
                     energiariba_laius += 1025-energiariba_laius 
     mänguaken_uuesti()
