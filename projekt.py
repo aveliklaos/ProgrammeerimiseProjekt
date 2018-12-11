@@ -30,7 +30,7 @@ skoori_fail = "skoorid.txt"
 tekst = "lõpp"
 kiirus = 5
 skoor = 0
-energiariba_laius = 1025
+energiariba_laius = 1000
 energiariba_kõrgus = 30
 x_kass = 100
 y_kass= 50
@@ -87,10 +87,10 @@ def lõppaken(tekst):
     #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
     global liigub
     mänguaken.blit(background, (0,0))
-    draw_text(tekst, 450, 100)
+    draw_text(tekst, 425, 50)
     draw_text("SINU SKOOR: " + str(skoor), 100, 180)
     draw_text("5 PARIMAT", 800, 180)
-    draw_text("Uuesti mängimiseks vajuta 'Enter'", 320, 600)
+    draw_text("Uuesti mängimiseks vajuta 'Enter'", 320, 650)
     
     kõik_skoorid, mängija_koht = edetabel("skoorid.txt", skoor)
     draw_text("SINU KOHT TABELIS: "+str(mängija_koht), 100, 400)
@@ -136,7 +136,6 @@ def edetabel(skoori_fail, skoor):
     
     for i in range(len(kõik_skoorid)):
         kõik_skoorid[i] = int(kõik_skoorid[i].strip())
-    
     kõik_skoorid.append(skoor)    
     kõik_skoorid.sort(reverse=True)    
     mängija_koht = (kõik_skoorid.index(skoor) +1) #sest indeksid hakkavad 0-st
@@ -145,8 +144,8 @@ def edetabel(skoori_fail, skoor):
     
     for i in range(len(kõik_skoorid)):
         skoorid.append(str(kõik_skoorid[i]) + "\n")
-
     fail2 = open(skoori_fail, "w")
+    
     for el in skoorid:
         fail2.write(el)
     fail2.close
@@ -181,7 +180,7 @@ def konservi_asukoht():
 def skoori_näitamine():
     skoori_tekst = "SKOOR: " + str(skoor)
     tekst_ekraanile = font.render(skoori_tekst, True, (255,182,193))
-    return mänguaken.blit(tekst_ekraanile, [1050,0])
+    return mänguaken.blit(tekst_ekraanile, [1025,0])
     
 def mänguaken_uuesti():
     mänguaken.blit(background, (0,0))
@@ -209,14 +208,14 @@ while liigub:
     if game_over == True:
         lõppaken(tekst)
         skoor = 0
-        energiariba_laius = 1025
+        energiariba_laius = 1000
         x_kass = 100
         y_kass= 50
         asukoha_muutus = True
         game_over = False
     if energiariba_laius <= 2:
         game_over = True
-        tekst = "Kass väsis ära..."
+        tekst = "KASS VÄSIS ÄRA..."
     #loob konservi ilmumiseks x ja y koordinaadid
     if randint(0,250) == randint(0,250) and konserv_ekraanil == False:
         koordinaadid = konservi_asukoht()
@@ -267,15 +266,15 @@ while liigub:
         elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 7 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
             #läks vastu herilast ehk mäng läbi
             game_over = True
-            tekst = "AIA, herilane sutsas! :("
+            tekst = "AIA, HERILANE SUTSAS! :("
         if konserv_väärtus == True:
             if x_konserv <= x_kass + 70 and x_konserv >= x_kass - 7 and y_konserv <= y_kass +75 and y_konserv >= y_kass -35:
                 konserv_väärtus = False
                 konserv_ekraanil = False
-                if 1000 >= energiariba_laius:
-                    energiariba_laius += 300 
+                if 700 >= energiariba_laius:
+                    energiariba_laius += 225 
                 else:
-                    energiariba_laius += 1025-energiariba_laius 
+                    energiariba_laius += 1000-energiariba_laius 
     elif paremale == True:
         if x_kärbes >= x_kass -15 and x_kärbes <= x_kass + 80 and y_kärbes >= y_kass -15 and y_kärbes <= y_kass + 60:
             x_herilane = herilase_asukoht()[0]
@@ -286,15 +285,15 @@ while liigub:
         elif x_herilane >= x_kass -15 and x_herilane <= x_kass + 80 and y_herilane >= y_kass -15 and y_herilane <= y_kass + 60:
             #läks vastu herilast ehk mäng läbi
             game_over = True
-            tekst = "AIA, herilane sutsas! :("
+            tekst = "AIA, HERILANE SUTSAS! :("
         if konserv_väärtus == True:
             if x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
                 konserv_väärtus = False
                 konserv_ekraanil = False
-                if 800 >= energiariba_laius:
-                    energiariba_laius += 300 
+                if 700 >= energiariba_laius:
+                    energiariba_laius += 225 
                 else:
-                    energiariba_laius += 1025-energiariba_laius 
+                    energiariba_laius += 1000-energiariba_laius 
     mänguaken_uuesti()
             
 pygame.quit()
