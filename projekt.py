@@ -24,14 +24,11 @@ pygame.mixer.music.load("muusika.mp3")
 pygame.mixer.music.play(-1,0.0)
 
 #vajaminevad muutujad
-PINK = (255, 0, 255)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 font = pygame.font.SysFont("Arial",35)
 font2 = pygame.font.SysFont("Century Gothic",35)
 skoori_fail = "skoorid.txt"
+tekst = "lõpp"
 kiirus = 5
-asukoha_muutus = True
 skoor = 0
 energiariba_laius = 1025
 energiariba_kõrgus = 30
@@ -47,6 +44,7 @@ konservi_laius = 45
 konservi_kõrgus = 30
 konserv_väärtus = False
 konserv_ekraanil = False
+asukoha_muutus = True
 liigub = True
 game_over = False
 mängu_algus = True
@@ -85,103 +83,35 @@ def algusaken():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
               
-def lõppaken():
+def lõppaken(tekst):
     #http://kidscancode.org/blog/2016/11/pygame_shmup_part_14/
     global liigub
     mänguaken.blit(background, (0,0))
-    draw_text("LÕPPSKOOR: " + str(skoor),
-              465, 100)
-    draw_text("Top 10 nägemiseks vajuta 'Enter'", 320, 600)
+    draw_text(tekst, 450, 100)
+    draw_text("SINU SKOOR: " + str(skoor), 100, 180)
+    draw_text("TOP 10", 800, 180)
+    draw_text("Uuesti mängimiseks vajuta 'Enter'", 320, 600)
     
-    nimi = enterbox(mänguaken, "Sinu nimi: ")
-    if type(nimi) != bool:
-        kirjuta_faili("skoorid.txt", nimi, skoor)
-    
-    pygame.display.flip()
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                pygame.mixer.music.pause()
-            if event.type == pygame.QUIT:
-                liigub = False
-                waiting = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                waiting = False
-                skooriaken()
-                
-def kirjuta_faili(fail, nimi, skoor):
-    f = open(fail, "a")
-    f.write("\n"+str(skoor)+", "+ nimi)
-    f.close
-                
-def enterbox(mänguaken, txt):
-    # https://www.dreamincode.net/forums/topic/395940-a-highscore-module-for-pygame/
-    def blink(mänguaken):
-        for color in [PINK, WHITE]:
-            pygame.draw.circle(box, color, (600, 220), 7, 0)
-            mänguaken.blit(box, (0, by//2))
-            pygame.display.flip()
-            pygame.time.wait(300)
-
-    def show_name(mänguaken, name):
-        pygame.draw.rect(box, WHITE, (200, 200, bx-400, 50), 0)
-        txt_surf = font.render(name, True, BLACK)
-        txt_rect = txt_surf.get_rect(center=(600, 220))
-        box.blit(txt_surf, txt_rect)
-        mänguaken.blit(box, (0, by//2))
-        pygame.display.flip()
-        
-    bx = 1200
-    by = 300
-
-    # tekitab kasti
-    box = pygame.surface.Surface((bx, by))
-    box.blit(background, (0,0))
-    txt_surf = font2.render(txt, True, BLACK)
-    txt_rect = txt_surf.get_rect(center=(bx//2, int(by*0.3)))
-    box.blit(txt_surf, txt_rect)
-
-    name = ""
-    show_name(mänguaken, name)
-
-    # sisestuse loop
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                liigub = False
-                return False
-            elif event.type == pygame.KEYDOWN:
-                inkey = event.key
-                if inkey in [13, 271]:  # enter
-                    skooriaken()
-                    return name
-                elif inkey == 8:  # tagasi nupp
-                    name = name[:-1]
-                elif inkey <= 300:
-                    if pygame.key.get_mods() & pygame.KMOD_SHIFT and 122 >= inkey >= 97:
-                        inkey -= 32  # SUURED tähed
-                    name += chr(inkey)
-
-        if name == "":
-            blink(mänguaken)
-        show_name(mänguaken, name)
-
-                
-def skooriaken():
-    global liigub
-    mänguaken.blit(background, (0,0))
-    skoorid = top10("skoorid.txt")
+    kõik_skoorid, mängija_koht = edetabel("skoorid.txt", skoor)
+    draw_text("SINU KOHT TABELIS: "+str(mängija_koht), 100, 400)
     koht = 1
-    y = 125
-    draw_text("TOP 10", 300, 50)
-    for skoorjanimi in skoorid:
-        nimi = skoorjanimi[1]
-        skoor= skoorjanimi[0]
-        draw_text(str(koht)+". "+nimi+"-"+str(skoor), 300, y)
-        koht+=1
-        y+=50
-    draw_text("Edasi mängimiseks vajuta 'Enter'", 320, 650)    
+    y = 250
+    if len(kõik_skoorid) < 5:
+        for i in range(len(kõik_skoorid)):
+            skoor_tabelisse = kõik_skoorid[i]
+            draw_text(str(koht)+". "+str(skoor_tabelisse)+" punkti", 800, y)
+            koht+=1
+            y+=70
+    else:
+        for i in range(5):
+            skoor_tabelisse = kõik_skoorid[i]
+            if skoor_tabelisse == 1:
+                draw_text(str(koht)+". "+str(skoor_tabelisse)+" punkt", 800, y)
+            else:
+                draw_text(str(koht)+". "+str(skoor_tabelisse)+" punkti", 800, y)
+            koht+=1
+            y+=70
+        
     pygame.display.flip()
     waiting = True
     while waiting:
@@ -193,21 +123,35 @@ def skooriaken():
                 waiting = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 waiting = False
-            
 
-def top10(skoori_fail):
-    fail = open(skoori_fail, 'r')
-    kõik_skoorid = fail.readlines()
+
+def edetabel(skoori_fail, skoor):
+    # https://www.dreamincode.net/forums/topic/395940-a-highscore-module-for-pygame/
+    fail = open(skoori_fail)
+    try:
+        kõik_skoorid = fail.readlines()
+    except:
+        kõik_skoorid = []
     fail.close
     
-    parimad10 = []
+    for i in range(len(kõik_skoorid)):
+        kõik_skoorid[i] = int(kõik_skoorid[i].strip())
     
-    for rida in kõik_skoorid:
-        if len(parimad10) < 10:
-            nimi_ja_skoor = rida.strip().split(", ")
-            parimad10.append(nimi_ja_skoor)
-    sorteeritud = list(reversed(sorted(parimad10, key = lambda x: int(x[0]))))
-    return sorteeritud
+    kõik_skoorid.append(skoor)    
+    kõik_skoorid.sort(reverse=True)    
+    mängija_koht = (kõik_skoorid.index(skoor) +1) #sest indeksid hakkavad 0-st
+    
+    skoorid = []
+    
+    for i in range(len(kõik_skoorid)):
+        skoorid.append(str(kõik_skoorid[i]) + "\n")
+
+    fail2 = open(skoori_fail, "w")
+    for el in skoorid:
+        fail2.write(el)
+    fail2.close
+    
+    return kõik_skoorid, mängija_koht
 
 def kärbse_asukoht():
     x_kärbes = randint(100,1100)
@@ -220,7 +164,7 @@ def kärbse_asukoht():
 def herilase_asukoht():       
     x_herilane = randint(100,1100)
     y_herilane = randint(150,650)
-    while not x_herilane >= x_kass + 110 and x_herilane <= x_kass - 110 and y_herilane >= y_kass + 45 and y_herilane <= y_kass - 45:
+    while not x_herilane >= x_kass + 110 and x_herilane <= x_kass - 110 and y_herilane >= y_kass + 110 and y_herilane <= y_kass - 110:
         x_herilane = randint(0,1200) 
         y_herilane = randint(150,650)
     return [x_herilane, y_herilane]
@@ -263,13 +207,16 @@ while liigub:
         algusaken()
         mängu_algus = False
     if game_over == True:
-        lõppaken()
+        lõppaken(tekst)
         skoor = 0
         energiariba_laius = 1025
+        x_kass = 100
+        y_kass= 50
         asukoha_muutus = True
         game_over = False
     if energiariba_laius <= 2:
         game_over = True
+        tekst = "Kass väsis ära..."
     #loob konservi ilmumiseks x ja y koordinaadid
     if randint(0,250) == randint(0,250) and konserv_ekraanil == False:
         koordinaadid = konservi_asukoht()
@@ -320,6 +267,7 @@ while liigub:
         elif x_herilane <= x_kass + 70 and x_herilane >= x_kass - 7 and y_herilane <= y_kass +75 and y_herilane >= y_kass -35:
             #läks vastu herilast ehk mäng läbi
             game_over = True
+            tekst = "AIA, herilane sutsas! :("
         if konserv_väärtus == True:
             if x_konserv <= x_kass + 70 and x_konserv >= x_kass - 7 and y_konserv <= y_kass +75 and y_konserv >= y_kass -35:
                 konserv_väärtus = False
@@ -338,6 +286,7 @@ while liigub:
         elif x_herilane >= x_kass -15 and x_herilane <= x_kass + 80 and y_herilane >= y_kass -15 and y_herilane <= y_kass + 60:
             #läks vastu herilast ehk mäng läbi
             game_over = True
+            tekst = "AIA, herilane sutsas! :("
         if konserv_väärtus == True:
             if x_konserv >= x_kass -15 and x_konserv <= x_kass + 80 and y_konserv >= y_kass -15 and y_konserv <= y_kass + 60:
                 konserv_väärtus = False
