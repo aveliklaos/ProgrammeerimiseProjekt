@@ -89,7 +89,7 @@ def lõppaken(tekst):
     mänguaken.blit(background, (0,0))
     draw_text(tekst, 450, 100)
     draw_text("SINU SKOOR: " + str(skoor), 100, 180)
-    draw_text("TOP 10", 800, 180)
+    draw_text("5 PARIMAT", 800, 180)
     draw_text("Uuesti mängimiseks vajuta 'Enter'", 320, 600)
     
     kõik_skoorid, mängija_koht = edetabel("skoorid.txt", skoor)
